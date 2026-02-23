@@ -1,38 +1,25 @@
 import React, { useState } from "react";
 
-export default function SearchCard({
-  passengers,
-  setPassengers,
-  from,
-  setFrom,
-  to,
-  setTo,
-  date,
-  setDate,
-  time,
-  setTime,
-}) {
+export default function SearchCard({ searchData = {}, setSearchData = () => {}, onSearch = () => {} }) {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const changePassenger = (value) => {
-    let newCount = passengers + value;
+    let newCount = (searchData.passengers || 1) + value;
     if (newCount < 1) newCount = 1;
     if (newCount > 6) newCount = 6;
-    setPassengers(newCount);
+    setSearchData({ ...searchData, passengers: newCount });
   };
 
   const swapLocations = () => {
-    const temp = from;
-    setFrom(to);
-    setTo(temp);
+    setSearchData({ ...searchData, from: searchData.to || "", to: searchData.from || "" });
   };
 
   const validateSearch = () => {
-    if (!from || !to || !date || !time) {
+    if (!searchData.from || !searchData.to || !searchData.date || !searchData.time) {
       alert("Please fill all fields 🚗");
       return;
     }
-    alert(`Searching rides for ${passengers} passenger(s) 🚀`);
+    onSearch(searchData);
   };
 
   return (
@@ -44,8 +31,8 @@ export default function SearchCard({
           type="text"
           placeholder="Leaving from"
           className="bg-transparent outline-none text-sm w-full"
-          value={from}
-          onChange={(e) => setFrom(e.target.value)}
+          value={searchData.from || ""}
+          onChange={(e) => setSearchData({ ...searchData, from: e.target.value })}
         />
       </div>
 
@@ -65,8 +52,8 @@ export default function SearchCard({
           type="text"
           placeholder="Going to"
           className="bg-transparent outline-none text-sm w-full"
-          value={to}
-          onChange={(e) => setTo(e.target.value)}
+          value={searchData.to || ""}
+          onChange={(e) => setSearchData({ ...searchData, to: e.target.value })}
         />
       </div>
 
@@ -76,8 +63,8 @@ export default function SearchCard({
         <input
           type="date"
           className="bg-transparent outline-none text-sm w-full"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={searchData.date || ""}
+          onChange={(e) => setSearchData({ ...searchData, date: e.target.value })}
         />
       </div>
 
@@ -87,8 +74,8 @@ export default function SearchCard({
         <input
           type="time"
           className="bg-transparent outline-none text-sm w-full"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
+          value={searchData.time || ""}
+          onChange={(e) => setSearchData({ ...searchData, time: e.target.value })}
         />
       </div>
 
@@ -100,7 +87,7 @@ export default function SearchCard({
         >
           <i className="fa-solid fa-user text-pink-500"></i>
           <span className="text-sm text-slate-600">
-            {passengers} passenger{passengers > 1 ? "s" : ""}
+            {searchData.passengers || 1} passenger{(searchData.passengers || 1) > 1 ? "s" : ""}
           </span>
         </div>
 
@@ -113,7 +100,7 @@ export default function SearchCard({
             >
               −
             </button>
-            <strong>{passengers}</strong>
+            <strong>{searchData.passengers || 1}</strong>
             <button
               onClick={() => changePassenger(1)}
               className="px-3 py-1 bg-pink-500 text-white rounded-full"
